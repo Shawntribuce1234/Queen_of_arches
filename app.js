@@ -1,0 +1,18 @@
+const photos=[
+ {id:5,title:'Purple reign',type:'balloons',label:'BALLOON INSTALLATION',alt:'Purple and lavender balloons with silver accents around a birthday backdrop'},
+ {id:3,title:'Pretty in pink. Bold in black.',type:'balloons',label:'BALLOON INSTALLATION',alt:'Pink and metallic balloons decorating a black event backdrop with illuminated numbers'},
+ {id:4,title:'The layered arch',type:'arches',label:'CUSTOM WOODEN BACKDROP',alt:'Natural wooden arch with layered curves on a round platform'},
+ {id:1,title:'A different kind of frame',type:'arches',label:'CUSTOM WOODEN ARCHES',alt:'Three nested rectangular wooden event arches'},
+ {id:6,title:'All about the curves',type:'arches',label:'WOODEN ARCH DETAIL',alt:'Close-up of the layered rounded detailing on a natural wooden arch'},
+ {id:2,title:'The midnight edit',type:'arches',label:'PAINTED WOODEN ARCHES',alt:'Nested rectangular event arches finished in matte black'},
+ {id:7,title:'A fresh angle',type:'arches',label:'GEOMETRIC WOODEN ARCHES',alt:'Two angular open wooden frames in natural wood'},
+ {id:8,title:'Your beautiful blank canvas',type:'arches',label:'CUSTOM WOODEN BACKDROP',alt:'Solid natural wood arched backdrop outdoors'}
+];
+const gallery=document.querySelector('#gallery'),dialog=document.querySelector('#lightbox');let current=0;let visible=photos;
+photos.forEach((p,i)=>{const b=document.createElement('button');b.className='gallery-card';b.dataset.type=p.type;b.setAttribute('aria-label',`View ${p.title}`);b.innerHTML=`<span class="photo-wrap"><img src="assets/photo-${p.id}.jpg" alt="${p.alt}" loading="lazy" width="600" height="800"></span><span class="caption"><span>${p.title}<small>${p.label}</small></span><span aria-hidden="true">↗</span></span>`;b.onclick=()=>{current=visible.indexOf(p);showPhoto();dialog.showModal();document.body.style.overflow='hidden'};gallery.append(b)});
+function showPhoto(){const p=visible[current];dialog.querySelector('img').src=`assets/photo-${p.id}.jpg`;dialog.querySelector('img').alt=p.alt;dialog.querySelector('p').textContent=p.title;document.querySelector('#photo-count').textContent=`${current+1} / ${visible.length}`}
+function step(n){current=(current+n+visible.length)%visible.length;showPhoto()}
+dialog.querySelector('.close').onclick=()=>dialog.close();dialog.querySelector('.prev').onclick=()=>step(-1);dialog.querySelector('.next').onclick=()=>step(1);dialog.addEventListener('close',()=>document.body.style.overflow='');dialog.addEventListener('click',e=>{if(e.target===dialog){const r=dialog.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)dialog.close()}});dialog.addEventListener('keydown',e=>{if(e.key==='ArrowLeft')step(-1);if(e.key==='ArrowRight')step(1)});
+document.querySelectorAll('[data-service]').forEach(a=>a.addEventListener('click',()=>document.querySelector('#service').value=a.dataset.service));
+document.querySelector('#inquiry-form').addEventListener('submit',e=>{e.preventDefault();const data=new FormData(e.target);const brief='QUEEN OF ARCHES — EVENT BRIEF\n\n'+[...data].map(([k,v])=>`${k}: ${v||'Not provided'}`).join('\n\n')+'\n\nThis brief has not been sent. Share it with Queen of Arches using their confirmed contact details.\n';const url=URL.createObjectURL(new Blob([brief],{type:'text/plain;charset=utf-8'}));const a=document.createElement('a');a.href=url;a.download='queen-of-arches-event-brief.txt';document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);document.querySelector('#form-status').textContent='Your brief is ready. Check your downloads. Nothing has been sent to Queen of Arches.'});
+document.querySelector('#year').textContent=new Date().getFullYear();
